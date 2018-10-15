@@ -80,7 +80,7 @@ def plot_traces(fit, chains=None, include_warmup=False):
     if include_warmup:
         t_start = 0
     else:
-        t_start = fit.sim['warmup']
+        t_start = fit.sim['warmup'] // fit.sim['thin']
     t_end = len(fit.sim['samples'][0]['chains'][labels[0]])
     t = list(range(t_start, t_end))
     
@@ -146,7 +146,7 @@ def plot_posteriors(fit, chains=None, markers=None):
     labels = list(fit.sim['samples'][0]['chains'].keys())
     
     
-    t_start = fit.sim['warmup']
+    t_start = fit.sim['warmup'] // fit.sim['thin']
     t_end = len(fit.sim['samples'][0]['chains'][labels[0]])
     
     fig, axes = plt.subplots(len(labels), 1, 
@@ -154,7 +154,7 @@ def plot_posteriors(fit, chains=None, markers=None):
     for idx, label in enumerate(labels):
         ax = axes[idx]
         samples = [fit.sim['samples'][chain]['chains'][label][t_start:t_end] for chain in chains]
-        _, bins, _ = ax.hist(samples, bins=50, stacked=True, normed=True, alpha=0.6)
+        _, bins, _ = ax.hist(samples, bins=50, stacked=True, density=True, alpha=0.6)
         
         y = np.zeros_like(bins)
         for idx, chain in enumerate(chains):
@@ -195,7 +195,7 @@ def posterior_stats(fit, chains=None):
         assert 0 <= chain < total_chains
     labels = list(fit.sim['samples'][0]['chains'].keys())
     
-    t_start = fit.sim['warmup']
+    t_start = fit.sim['warmup'] // fit.sim['thin']
     t_end = len(fit.sim['samples'][0]['chains'][labels[0]])
     
     par_chains = []
